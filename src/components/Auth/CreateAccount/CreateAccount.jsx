@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react'; // Fixed import statement
+import { useState, useRef } from 'react';
 import style from '../Auth.module.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import axiosConfig from '../../../API/axiosConfig';
 import { PuffLoader } from 'react-spinners';
@@ -9,7 +9,7 @@ const CreateAccount = ({ toggleAuth }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const emailRef = useRef();
   const firstNameRef = useRef();
@@ -24,27 +24,31 @@ const CreateAccount = ({ toggleAuth }) => {
   const handleCreateAccount = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
       const response = await axiosConfig.post('/users/register', {
-        email: emailRef.current.value,
-        first_name: firstNameRef.current.value,
-        last_name: lastNameRef.current.value,
-        username: userNameRef.current.value,
+        email: emailRef.current.value.trim(),
+        first_name: firstNameRef.current.value.trim(),
+        last_name: lastNameRef.current.value.trim(),
+        username: userNameRef.current.value.trim(),
         password: passwordRef.current.value,
       });
+      console.log(response)
 
-
-      toggleAuth();
-    } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred. Please try again.');
+      // Optionally navigate or toggle to login page
+      toggleAuth(); // or use navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className={`${style.form__container} ${style.create}`}>
       <form className={style.form} onSubmit={handleCreateAccount}>
-        <h1>Join the network</h1>
+        <h1>Create Your Account</h1>
         <p>
           Already have an account?{' '}
           <Link to="/" onClick={toggleAuth} className={style.create__account}>
@@ -72,7 +76,7 @@ const CreateAccount = ({ toggleAuth }) => {
         </div>
 
         <div className={style.input__group}>
-          <input ref={userNameRef} type="text" placeholder="User Name" required />
+          <input ref={userNameRef} type="text" placeholder="Username" required />
         </div>
 
         <div className={style.input__group}>
@@ -91,18 +95,19 @@ const CreateAccount = ({ toggleAuth }) => {
             </span>
           </div>
         </div>
-        <button type="submit" className={style.join__button}>
-          {isLoading ? (<PuffLoader color="#000" size={20} ></PuffLoader>) : ('Agree and Join')}
+
+        <button type="submit" className={style.join__button} disabled={isLoading}>
+          {isLoading ? <PuffLoader color="#fff" size={20} /> : 'Agree and Join'}
         </button>
 
         <p className={style.terms}>
           I agree to the{' '}
           <Link to="/" className={style.create__account}>
-            privacy policy
+            Privacy Policy
           </Link>{' '}
           and{' '}
           <Link to="/" className={style.create__account}>
-            terms of service
+            Terms of Service
           </Link>.
         </p>
 
