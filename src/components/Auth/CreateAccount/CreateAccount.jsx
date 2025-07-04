@@ -97,7 +97,9 @@ const CreateAccount = ({ toggleAuth }) => {
         </div>
 
         <button type="submit" className={style.join__button} disabled={isLoading}>
-          {isLoading ? <PuffLoader color="#fff" size={20} /> : 'Agree and Join'}
+          <div className={style.button__loading}>
+            {isLoading ? <PuffLoader color="#fff" size={20} /> : 'Agree and Join'}
+          </div>
         </button>
 
         <p className={style.terms}>
